@@ -1,6 +1,17 @@
 server:
   port: 8096
 
+# 线程池配置
+thread:
+  pool:
+    executor:
+      config:
+        core-pool-size: 20
+        max-pool-size: 50
+        keep-alive-time: 5000
+        block-queue-size: 5000
+        policy: CallerRunsPolicy
+
 spring:
   # 多数据源配置
   datasource:
@@ -8,7 +19,7 @@ spring:
     mysql:
       username:
       password:
-      url: jdbc:mysql://localhost:3306/ai-agent/station?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&useSSL=true
+      url: jdbc:mysql://localhost:3306/ai-agent-station?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai&useSSL=true
       driver-class-name: com.mysql.cj.jdbc.Driver
       hikari:
         pool-name: Retail_HikariCP
@@ -43,13 +54,11 @@ spring:
         options:
           model: text-embedding-v4
           dimensions: 1536
-    # MCP配置
-    mcp:
-      client:
-        sse:
-          connections:
-            server:
-              url: http://localhost:18093
+    # Agent配置
+    agent:
+      auto-config:
+        enabled: true
+        client_id_list_expr: 3101,3102,3103,3104
 
 # MyBatis配置
 mybatis:

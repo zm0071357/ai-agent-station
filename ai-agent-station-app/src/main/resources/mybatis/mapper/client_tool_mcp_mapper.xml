@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ai.agent.station.infrastructure.dao.ClientToolMcpDao">
+
+    <resultMap id="ClientToolMcpMap" type="ai.agent.station.infrastructure.dao.po.ClientToolMcp">
+        <id column="id" property="id"/>
+        <result column="tool_mcp_id" property="toolMcpId"/>
+        <result column="tool_mcp_name" property="toolMcpName"/>
+        <result column="transport_type" property="transportType"/>
+        <result column="transport_config" property="transportConfig"/>
+        <result column="request_timeout" property="requestTimeout"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="getToolMcpByToolMcpId" resultMap="ClientToolMcpMap">
+        SELECT tool_mcp_id, tool_mcp_name, transport_type, transport_config, request_timeout
+        FROM client_tool_mcp
+        WHERE tool_mcp_id = #{toolMcpId} AND status = 1
+    </select>
+
+</mapper>

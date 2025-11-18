@@ -47,6 +47,12 @@
                 <version>1.1.0.0-M4</version>
             </dependency>
             <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.13.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>2.0.28</version>
@@ -76,6 +82,7 @@
                 <artifactId>org.eclipse.jgit</artifactId>
                 <version>5.13.0.202109080827-r</version>
             </dependency>
+
             <!-- 系统模块 -->
             <dependency>
                 <groupId>top.xiaoming-programming</groupId>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ai.agent.station.infrastructure.dao.ClientPromptDao">
+
+    <resultMap id="ClientPromptMap" type="ai.agent.station.infrastructure.dao.po.ClientPrompt">
+        <id column="id" property="id"/>
+        <result column="prompt_id" property="promptId"/>
+        <result column="prompt_name" property="promptName"/>
+        <result column="prompt_content" property="promptContent"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="getPromptByPromptId" resultMap="ClientPromptMap">
+        SELECT prompt_id, prompt_name, prompt_content
+        FROM client_prompt
+        WHERE prompt_id = #{promptId} AND status = 1
+    </select>
+
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ai.agent.station.infrastructure.dao.ClientConfigDao">
+
+    <resultMap id="ClientConfigMap" type="ai.agent.station.infrastructure.dao.po.ClientConfig">
+        <id column="id" property="id"/>
+        <result column="source_type" property="sourceType"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="target_type" property="targetType"/>
+        <result column="target_id" property="targetId"/>
+        <result column="ext_param" property="extParam"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="getConfig" resultMap="ClientConfigMap">
+        SELECT id, source_type, source_id, target_type, target_id, ext_param
+        FROM client_config
+        WHERE
+            source_type = #{sourceType} AND
+            target_type = #{targetType} AND
+            status = 1 AND source_id IN
+            <foreach item = "clientId" collection="clientIdList" open="(" separator="," close=")">
+                #{clientId}
+            </foreach>
+    </select>
+
+    <select id="getConfigByClientId" resultMap="ClientConfigMap">
+        SELECT id, source_type, source_id, target_type, target_id, ext_param
+        FROM client_config
+        WHERE
+            source_type = #{sourceType} AND
+            source_id = #{sourceId} AND
+            status = 1
+    </select>
+
+
+</mapper>
