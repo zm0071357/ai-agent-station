@@ -4,6 +4,7 @@ import ai.agent.station.domain.agent.model.entity.ChatRequestEntity;
 import ai.agent.station.domain.agent.model.entity.LoadCommandEntity;
 import ai.agent.station.domain.agent.model.entity.LoadResEntity;
 import ai.agent.station.domain.agent.service.execute.ExecuteService;
+import ai.agent.station.domain.agent.service.execute.manager.ResponseBodyEmitterManager;
 import ai.agent.station.domain.agent.service.load.factory.DefaultLoadFactory;
 import ai.agent.station.types.framework.tree.StrategyHandler;
 import com.alibaba.fastjson.JSON;
@@ -13,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 import java.util.Arrays;
 
@@ -41,12 +43,16 @@ public class AgentTest {
 
     @Test
     public void test_execute() throws Exception {
-        executeService.execute(ChatRequestEntity.builder()
+        String userId = "399547479";
+        ResponseBodyEmitter emitter = ResponseBodyEmitterManager.put(userId, Long.MAX_VALUE);
+        executeService.execute(
+                ChatRequestEntity.builder()
                         .userId("399547479")
-                        .prompt("写一个小红帽的故事，结局小红帽要被狼吃掉")
-                        .maxStep(2)
-                .build());
+                        .prompt("写一个龟兔赛跑的故事，结局是兔子要赢")
+                        .maxStep(3)
+                        .build(),
+                emitter
+        );
     }
-
 
 }

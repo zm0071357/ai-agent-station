@@ -1,9 +1,13 @@
 package ai.agent.station.domain.agent.service.execute.nodeaction;
 
+import ai.agent.station.domain.agent.model.entity.ExecuteResultEntity;
+import ai.agent.station.domain.agent.service.execute.factory.DefaultLinkFactory;
+import ai.agent.station.domain.agent.service.execute.manager.ResponseBodyEmitterManager;
 import com.alibaba.cloud.ai.graph.OverAllState;
 import com.alibaba.cloud.ai.graph.action.NodeAction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -15,7 +19,7 @@ import static ai.agent.station.types.common.Constants.*;
  * 任务助手状态图 - 任务执行节点
  */
 @Slf4j
-public class TaskPrecisionNodeAction implements NodeAction {
+public class TaskPrecisionNodeAction extends AbstractNodeAction {
 
     private final ChatClient taskPrecisionClient;
 
@@ -52,6 +56,7 @@ public class TaskPrecisionNodeAction implements NodeAction {
                     5. 确保执行结果能直接回答用户的问题
                     
                     **输出格式:**
+                    请严格按照以下给定的格式和标签来组织你的回答，不要添加任何额外的解释、前言或总结。你的输出必须且只能是以下结构：
                     执行目标: [明确的执行目标]
                     执行过程: [实际执行的步骤和调用的工具]
                     执行结果: [具体的执行成果和获得的信息/内容]
@@ -93,6 +98,10 @@ public class TaskPrecisionNodeAction implements NodeAction {
             isCompleted = "NO";
         }
 
+        // 解析和发送结果
+        log.info("任务执行节点 - 用户：{}，解析第 {} 步结果", userId, currentStep);
+        parseResult(ResponseBodyEmitterManager.get(userId), currentStep, precisionResult, userId);
+
         // 写入上下文
         return Map.of(
                 "precisionResult", precisionResult,
@@ -100,6 +109,65 @@ public class TaskPrecisionNodeAction implements NodeAction {
                 "isContinue", isContinue,
                 "isCompleted", isCompleted
         );
+    }
+
+    @Override
+    protected void parseResult(ResponseBodyEmitter emitter, int currentStep, String precisionResult, String userId) {
+        // 将分析结果分段
+        String[] lines = precisionResult.split("\n");
+        // 子类型
+        String subType = "";
+        // 发送文本段
+        StringBuilder sectionContent = new StringBuilder();
+
+        for (String line : lines) {
+            line = line.trim();
+            if (line.isEmpty()) continue;
+
+            if (line.contains("执行目标:")) {
+                // 发送上一个section的内容
+                sendResult(emitter, currentStep, subType, sectionContent.toString(), userId);
+                subType = "execution_target";
+                sectionContent = new StringBuilder();
+            } else if (line.contains("执行过程:")) {
+                // 发送上一个section的内容
+                sendResult(emitter, currentStep, subType, sectionContent.toString(), userId);
+                subType = "execution_process";
+                sectionContent = new StringBuilder();
+            } else if (line.contains("执行结果:")) {
+                // 发送上一个section的内容
+                sendResult(emitter, currentStep, subType, sectionContent.toString(), userId);
+                subType = "execution_result";
+                sectionContent = new StringBuilder();
+            } else if (line.contains("质量检查:")) {
+                // 发送上一个section的内容
+                sendResult(emitter, currentStep, subType, sectionContent.toString(), userId);
+                subType = "execution_quality";
+                sectionContent = new StringBuilder();
+            }
+
+            // 收集当前section的内容
+            if (!subType.isEmpty()) {
+                sectionContent.append(line).append("\n");
+                switch (subType) {
+                    case "execution_target" -> log.info("🎯 {}", line);
+                    case "execution_process" -> log.info("🔧 {}", line);
+                    case "execution_result" -> log.info("📋 {}", line);
+                    case "execution_quality" -> log.info("✅ {}", line);
+                }
+            }
+        }
+
+        // 发送最后一个section的内容
+        sendResult(emitter, currentStep, subType, sectionContent.toString(), userId);
+    }
+
+    @Override
+    protected void sendResult(ResponseBodyEmitter emitter, int currentStep, String subType, String content, String userId) {
+        if (!subType.isEmpty() && !content.isEmpty()) {
+            ExecuteResultEntity executeResultEntity = ExecuteResultEntity.createExecutionSubResult(currentStep, subType, content, userId);
+            sendSseResult(emitter, executeResultEntity);
+        }
     }
 
 }

@@ -1,9 +1,11 @@
 package ai.agent.station.domain.agent.service.execute.nodeaction;
 
+import ai.agent.station.domain.agent.model.entity.ExecuteResultEntity;
+import ai.agent.station.domain.agent.service.execute.manager.ResponseBodyEmitterManager;
 import com.alibaba.cloud.ai.graph.OverAllState;
-import com.alibaba.cloud.ai.graph.action.NodeAction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -16,7 +18,7 @@ import static ai.agent.station.types.common.Constants.*;
  * 任务助手状态图 - 任务分析节点
  */
 @Slf4j
-public class TaskAnalysisNodeAction implements NodeAction {
+public class TaskAnalysisNodeAction extends AbstractNodeAction {
 
     private final ChatClient taskAnalysisClient;
 
@@ -49,7 +51,9 @@ public class TaskAnalysisNodeAction implements NodeAction {
                     4. 确保策略能够直接回答用户的问题
                         
                     **输出格式要求:**
+                    请严格按照以下给定的格式和标签来组织你的回答，不要添加任何额外的解释、前言或总结。你的输出必须且只能是以下结构：
                     任务状态分析: [当前任务完成情况的详细分析]
+                    执行历史评估: [对已完成工作的质量和效果评估]
                     下一步策略: [具体的执行计划，包括需要调用的工具和生成的内容]
                     """,
                 prompt,
@@ -68,8 +72,9 @@ public class TaskAnalysisNodeAction implements NodeAction {
                 .collectList()
                 .map(list -> String.join("", list));
         String analysisResult = completeText.block();
-        log.info("任务分析节点 - 任务：{}，用户：{}，任务分析结果：\n{}", prompt, userId, analysisResult);
+
         assert analysisResult != null;
+        log.info("任务分析节点 - 任务：{}，用户：{}，任务分析结果：\n{}", prompt, userId, analysisResult);
 
         // 执行步数增加
         currentStep ++;
@@ -87,6 +92,10 @@ public class TaskAnalysisNodeAction implements NodeAction {
             isCompleted = "NO";
         }
 
+        // 解析和发送结果
+        log.info("任务分析节点 - 用户：{}，解析第 {} 步结果", userId, currentStep);
+        parseResult(ResponseBodyEmitterManager.get(userId), currentStep, analysisResult, userId);
+
         // 写入上下文
         return Map.of(
                 "analysisResult", analysisResult,
@@ -94,6 +103,60 @@ public class TaskAnalysisNodeAction implements NodeAction {
                 "isContinue", isContinue,
                 "isCompleted", isCompleted
         );
+    }
+
+    @Override
+    protected void parseResult(ResponseBodyEmitter emitter, int currentStep, String analysisResult, String userId) {
+        // 将分析结果分段
+        String[] lines = analysisResult.split("\n");
+        // 子类型
+        String subType = "";
+        // 发送文本段
+        StringBuilder sectionContent = new StringBuilder();
+
+        for (String line : lines) {
+            // 去除字符串两端的空白字符
+            line = line.trim();
+            if (line.isEmpty()) {
+                continue;
+            }
+            if (line.contains("任务状态分析:")) {
+                // 发送上一个section的内容
+                sendResult(emitter, currentStep, subType, sectionContent.toString(), userId);
+                subType = "analysis_status";
+                sectionContent = new StringBuilder();
+            } else if (line.contains("执行历史评估:")) {
+                // 发送上一个section的内容
+                sendResult(emitter, currentStep, subType, sectionContent.toString(), userId);
+                subType = "analysis_history";
+                sectionContent = new StringBuilder();
+            } else if (line.contains("下一步策略:")) {
+                // 发送上一个section的内容
+                sendResult(emitter, currentStep, subType, sectionContent.toString(), userId);
+                subType = "analysis_strategy";
+                sectionContent = new StringBuilder();
+            }
+
+            // 收集当前section的内容
+            if (!subType.isEmpty()) {
+                sectionContent.append(line).append("\n");
+                switch (subType) {
+                    case "analysis_status" -> log.info("📊 {}", line);
+                    case "analysis_history" -> log.info("📈 {}", line);
+                    case "analysis_strategy" -> log.info("🚀 {}", line);
+                }
+            }
+        }
+        // 发送最后一个section的内容
+        sendResult(emitter, currentStep, subType, sectionContent.toString(), userId);
+    }
+
+    @Override
+    protected void sendResult(ResponseBodyEmitter emitter, int currentStep, String subType, String content, String userId) {
+        if (!subType.isEmpty() && !content.isEmpty()) {
+            ExecuteResultEntity executeResultEntity = ExecuteResultEntity.createAnalysisSubResult(currentStep, subType, content, userId);
+            sendSseResult(emitter, executeResultEntity);
+        }
     }
 
 }

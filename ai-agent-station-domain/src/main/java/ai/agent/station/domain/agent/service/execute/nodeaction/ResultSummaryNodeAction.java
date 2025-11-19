@@ -1,9 +1,13 @@
 package ai.agent.station.domain.agent.service.execute.nodeaction;
 
+import ai.agent.station.domain.agent.model.entity.ExecuteResultEntity;
+import ai.agent.station.domain.agent.service.execute.factory.DefaultLinkFactory;
+import ai.agent.station.domain.agent.service.execute.manager.ResponseBodyEmitterManager;
 import com.alibaba.cloud.ai.graph.OverAllState;
 import com.alibaba.cloud.ai.graph.action.NodeAction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -15,7 +19,7 @@ import static ai.agent.station.types.common.Constants.*;
  * 任务助手状态图 - 结果总结节点
  */
 @Slf4j
-public class ResultSummaryNodeAction implements NodeAction {
+public class ResultSummaryNodeAction extends AbstractNodeAction {
 
     private final ChatClient resultSummaryClient;
 
@@ -37,6 +41,7 @@ public class ResultSummaryNodeAction implements NodeAction {
         log.info("结果总结节点 - 任务：{}，用户：{}，最大执行步数：{}，当前执行步数：{}，是否执行完成：{}", prompt, userId, maxStep, currentStep, isCompleted);
 
         String summaryPrompt = getSummaryPrompt(isCompleted, prompt, analysisResult, precisionResult, supervisionResult);
+
         // 大模型调用
         Flux<String> summaryFluxResult = resultSummaryClient.prompt(summaryPrompt)
                 .advisors(a -> a
@@ -51,10 +56,10 @@ public class ResultSummaryNodeAction implements NodeAction {
                 .map(list -> String.join("", list));
         String summaryResult = completeText.block();
         assert summaryResult != null;
-        log.info("任务分析节点 - 任务：{}，用户：{}，结果总结结果：\n{}", prompt, userId, supervisionResult);
+        log.info("结果总结节点 - 任务：{}，用户：{}，结果总结：\n{}", prompt, userId, summaryResult);
 
-        // 执行步数增加
-        log.info("结果总结节点 - 任务：{}，用户：{}，最大执行步数：{}，任务处理完成", prompt, userId, maxStep);
+        //解析和发送结果
+        parseResult(ResponseBodyEmitterManager.get(userId), currentStep, summaryResult, userId);
 
         return Map.of(
                 "prompt", prompt,
@@ -136,6 +141,26 @@ public class ResultSummaryNodeAction implements NodeAction {
                     supervisionResult);
         }
         return summaryPrompt;
+    }
+
+    @Override
+    protected void parseResult(ResponseBodyEmitter emitter, int currentStep, String summaryResult, String userId) {
+        String[] lines = summaryResult.split("\\n");
+        StringBuilder sb = new StringBuilder();
+        for (String line : lines) {
+            if (!line.trim().isEmpty()) {
+                sb.append(line).append("\n");
+            }
+        }
+        String result = sb.toString().trim();
+        log.info("✨ {}",result);
+        sendResult(emitter, currentStep, null, result, userId);
+    }
+
+    @Override
+    protected void sendResult(ResponseBodyEmitter emitter, int currentStep, String subType, String content, String userId) {
+        ExecuteResultEntity executeResultEntity = ExecuteResultEntity.createSummaryResult(content, userId);
+        sendSseResult(emitter, executeResultEntity);
     }
 
 }
