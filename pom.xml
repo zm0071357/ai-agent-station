@@ -82,6 +82,16 @@
                 <artifactId>org.eclipse.jgit</artifactId>
                 <version>5.13.0.202109080827-r</version>
             </dependency>
+            <dependency>
+                <groupId>com.github.houbb</groupId>
+                <artifactId>sensitive-word</artifactId>
+                <version>0.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>3.26.0</version>
+            </dependency>
 
             <!-- 系统模块 -->
             <dependency>

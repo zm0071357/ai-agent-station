@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ai.agent.station.infrastructure.dao.UserDao">
+
+    <resultMap id="UserMap" type="ai.agent.station.infrastructure.dao.po.User">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="user_email" property="userEmail"/>
+        <result column="is_black" property="isBlack"/>
+        <result column="execute_count" property="executeCount"/>
+        <result column="password" property="password"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="getUserByUserId" resultMap="UserMap">
+        SELECT id, user_id, user_name, user_email, is_black, execute_count, password, create_time, update_time
+        FROM user
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="getUserByUserEmail" resultMap="UserMap">
+        SELECT id, user_id, user_name, user_email, is_black, execute_count, password, create_time, update_time
+        FROM user
+        WHERE user_email = #{userEmail}
+    </select>
+
+    <insert id="insert" parameterType="ai.agent.station.infrastructure.dao.po.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (
+            user_id,
+            user_name,
+            user_email,
+            password,
+            create_time,
+            update_time
+        ) VALUES (
+                     #{userId},
+                     #{userName},
+                     #{userEmail},
+                     #{password},
+                     now(),
+                     now()
+                 )
+    </insert>
+
+    <update id="updatePoints" parameterType="ai.agent.station.infrastructure.dao.po.User">
+        UPDATE user
+        SET points = points + #{points}, update_time = now()
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateUserExecuteCount" parameterType="ai.agent.station.infrastructure.dao.po.User">
+        UPDATE user
+        SET execute_count = execute_count + #{executeCount}, update_time = now()
+        WHERE user_id = #{userId}
+    </update>
+
+</mapper>

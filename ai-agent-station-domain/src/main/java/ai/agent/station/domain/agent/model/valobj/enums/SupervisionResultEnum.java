@@ -73,7 +73,7 @@ public enum SupervisionResultEnum {
                     "supervisionResult", supervisionResultEntity.getSupervisionResult(),
                     "currentStep", supervisionResultEntity.getCurrentStep(),
                     "isPass", "MAXSTEP",
-                    "isCompleted", "NO"
+                    "isCompleted", "YES"
             );
         }
     },
@@ -85,7 +85,7 @@ public enum SupervisionResultEnum {
                     "supervisionResult", supervisionResultEntity.getSupervisionResult(),
                     "currentStep", supervisionResultEntity.getCurrentStep(),
                     "isPass", "MAXSTEP",
-                    "isCompleted", "NO"
+                    "isCompleted", "YES"
             );
         }
     },

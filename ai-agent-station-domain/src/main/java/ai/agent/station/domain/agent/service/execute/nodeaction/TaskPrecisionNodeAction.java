@@ -80,14 +80,17 @@ public class TaskPrecisionNodeAction implements NodeAction {
         // 执行步数增加
         currentStep ++;
 
-        // 是否继续执行
+        // 是否继续执行和是否完成
         String isContinue;
+        String isCompleted;
         if (currentStep >= maxStep) {
             log.info("任务执行节点 - 任务：{}，用户：{}，最大执行步数：{}，当前执行步数：{}，已达最大执行步数，进入结果总结节点", prompt, userId, maxStep, currentStep);
             isContinue = "NO";
+            isCompleted = "YES";
         } else {
             log.info("任务执行节点 - 任务：{}，用户：{}，最大执行步数：{}，当前执行步数：{}，继续执行，进入质量监督节点", prompt, userId, maxStep, currentStep);
             isContinue = "YES";
+            isCompleted = "NO";
         }
 
         // 写入上下文
@@ -95,7 +98,7 @@ public class TaskPrecisionNodeAction implements NodeAction {
                 "precisionResult", precisionResult,
                 "currentStep", currentStep,
                 "isContinue", isContinue,
-                "isCompleted", "NO"
+                "isCompleted", isCompleted
         );
     }
 

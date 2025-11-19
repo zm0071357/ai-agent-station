@@ -30,7 +30,7 @@ public class ResultSummaryNodeAction implements NodeAction {
         String userId = state.value("userId", "null");
         int maxStep = state.value("maxStep", DEFAULT_MAX_STEP);
         int currentStep = state.value("currentStep", DEFAULT_CURRENT_STEP);
-        String isCompleted = state.value("isCompleted", "NO");
+        String isCompleted = state.value("isCompleted", "YES");
         String analysisResult = state.value("analysisResult", "null");
         String precisionResult = state.value("precisionResult", "null");
         String supervisionResult = state.value("supervisionResult", "null");
@@ -54,8 +54,7 @@ public class ResultSummaryNodeAction implements NodeAction {
         log.info("任务分析节点 - 任务：{}，用户：{}，结果总结结果：\n{}", prompt, userId, supervisionResult);
 
         // 执行步数增加
-        currentStep ++;
-        log.info("结果总结节点 - 任务：{}，用户：{}，最大执行步数：{}，当前执行步数：{}，任务处理完成", prompt, userId, maxStep, currentStep);
+        log.info("结果总结节点 - 任务：{}，用户：{}，最大执行步数：{}，任务处理完成", prompt, userId, maxStep);
 
         return Map.of(
                 "prompt", prompt,
@@ -64,7 +63,8 @@ public class ResultSummaryNodeAction implements NodeAction {
                 "analysisResult", analysisResult,
                 "precisionResult", precisionResult,
                 "supervisionResult", supervisionResult,
-                "summaryResult", summaryResult
+                "summaryResult", summaryResult,
+                "executeCount", currentStep
         );
     }
 

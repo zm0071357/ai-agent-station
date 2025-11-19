@@ -44,6 +44,10 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.houbb</groupId>
+            <artifactId>sensitive-word</artifactId>
+        </dependency>
         <!-- 系统模块 -->
         <dependency>
             <groupId>top.xiaoming-programming</groupId>

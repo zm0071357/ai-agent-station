@@ -60,6 +60,22 @@ spring:
         enabled: true
         client_id_list_expr: 3101,3102,3103,3104
 
+# Redis 配置
+redis:
+  sdk:
+    config:
+      host:
+      port:
+      password:
+      pool-size: 10
+      min-idle-size: 5
+      idle-timeout: 30000
+      connect-timeout: 5000
+      retry-attempts: 3
+      retry-interval: 1000
+      ping-interval: 60000
+      keep-alive: true
+
 # MyBatis配置
 mybatis:
   mapper-locations: classpath:/mybatis/mapper/*.xml

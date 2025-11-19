@@ -4,6 +4,8 @@ public class Constants {
 
     public final static String SPLIT = ",";
 
+    public final static String COMMA = "、";
+
     public static final String DEFAULT_SYSTEM_PROMPT = "你是一个有用的拼团服务AI助手";
 
     public static final String TASK_ANALYSIS_PROMPT = "你是一个专业的任务分析助手，名叫 AutoAgent Task Analyzer。";
@@ -17,6 +19,8 @@ public class Constants {
     public static final int DEFAULT_MAX_STEP = 4;
 
     public static final int DEFAULT_CURRENT_STEP = 0;
+
+    public static final int MAX_STEP = 10;
 
     public static final String CHAT_MEMORY_CONVERSATION_ID_KEY = "chat_memory_conversation_id";
 
