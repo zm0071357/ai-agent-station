@@ -45,10 +45,54 @@ public class AgentTest {
     public void test_execute() throws Exception {
         String userId = "399547479";
         ResponseBodyEmitter emitter = ResponseBodyEmitterManager.put(userId, Long.MAX_VALUE);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         executeService.execute(
                 ChatRequestEntity.builder()
                         .userId("399547479")
-                        .prompt("写一个龟兔赛跑的故事，结局是兔子要赢")
+                        .prompt("请基于知识库写一个故事")
+                        .tag("LZM相关信息")
                         .maxStep(3)
                         .build(),
                 emitter

@@ -19,6 +19,11 @@ public class ChatRequestDTO {
     private String prompt;
 
     /**
+     * 知识库标签
+     */
+    private String tag;
+
+    /**
      * 最大执行步数
      */
     private Integer maxStep;

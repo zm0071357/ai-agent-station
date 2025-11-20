@@ -26,11 +26,7 @@ public class StepFilter implements LogicHandler<ChatRequestEntity, DefaultLinkFa
                     .message("最大执行步数非法")
                     .build();
         }
-        return CheckRequestEntity.builder()
-                .isPass(true)
-                .message("校验通过")
-                .executeCount(dynamicContext.getExecuteCount())
-                .build();
+        return next(chatRequestEntity, dynamicContext);
     }
 
 }

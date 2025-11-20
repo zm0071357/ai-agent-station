@@ -25,6 +25,11 @@ public class ChatRequestEntity {
     private String prompt;
 
     /**
+     * 提示词标签
+     */
+    private String tag;
+
+    /**
      * 最大执行步数
      */
     private Integer maxStep;

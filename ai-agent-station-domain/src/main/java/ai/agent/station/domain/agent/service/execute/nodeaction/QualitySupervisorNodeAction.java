@@ -35,10 +35,11 @@ public class QualitySupervisorNodeAction extends AbstractNodeAction {
         String userId = state.value("userId", "null");
         int maxStep = state.value("maxStep", DEFAULT_MAX_STEP);
         int currentStep = state.value("currentStep", DEFAULT_CURRENT_STEP);
+        String tag = state.value("tag", "");
         log.info("质量监督节点 - 任务：{}，用户：{}，最大执行步数：{}，当前执行步数：{}", prompt, userId, maxStep, currentStep);
 
         // 提示词
-        String precisionPrompt = state.value("precisionPrompt", "跳过当前节点，直接不通过");
+        String precisionResult = state.value("precisionResult", "跳过当前节点，直接不通过");
         String supervisionPrompt = String.format("""
                     **用户原始需求:** %s
                     
@@ -61,13 +62,14 @@ public class QualitySupervisorNodeAction extends AbstractNodeAction {
                     是否通过: [通过/不通过/再优化]
                     """,
                 prompt,
-                precisionPrompt);
+                precisionResult);
 
         // 大模型调用
         Flux<String> supervisionFluxResult = qualitySupervisorClient.prompt(supervisionPrompt)
                 .advisors(a -> a
                         .param(CHAT_MEMORY_CONVERSATION_ID_KEY, userId)
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 1024))
+                .advisors(getRagAnswerAdvisorList(userId, tag))
                 .stream()
                 .content();
 
@@ -79,12 +81,15 @@ public class QualitySupervisorNodeAction extends AbstractNodeAction {
         assert supervisionResult != null;
         log.info("质量监督节点 - 任务：{}，用户：{}，质量监督结果：\n{}", prompt, userId, supervisionResult);
 
+        // 执行步数增加
+        currentStep ++;
+
         // 解析和发送结果
         log.info("质量监督节点 - 用户：{}，解析第 {} 步结果", userId, currentStep);
         parseResult(ResponseBodyEmitterManager.get(userId), currentStep, supervisionResult, userId);
 
         // 获取枚举
-        SupervisionResultEnum supervisionResultEnum = SupervisionResultEnum.get(++ currentStep >= maxStep, SupervisionEnum.getSupervision(supervisionResult));
+        SupervisionResultEnum supervisionResultEnum = SupervisionResultEnum.get(currentStep >= maxStep, SupervisionEnum.getSupervision(supervisionResult));
         return supervisionResultEnum.getResult(SupervisionResultEntity.builder()
                 .supervisionResult(supervisionResult)
                 .currentStep(currentStep)

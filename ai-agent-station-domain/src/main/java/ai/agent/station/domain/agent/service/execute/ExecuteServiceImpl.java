@@ -47,6 +47,7 @@ public class ExecuteServiceImpl implements ExecuteService {
             requestParamMap.put("prompt", chatRequestEntity.getPrompt());
             requestParamMap.put("userId", chatRequestEntity.getUserId());
             requestParamMap.put("maxStep", chatRequestEntity.getMaxStep());
+            requestParamMap.put("tag", chatRequestEntity.getTag());
             Optional<OverAllState> overAllState = taskAssistantGraph.invoke(requestParamMap);
             Map<String, Object> map = overAllState.map(OverAllState::data).orElse(Map.of());
             log.info("用户请求：{}，返回结果：{}", JSON.toJSONString(chatRequestEntity), JSON.toJSONString(map));

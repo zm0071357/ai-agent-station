@@ -55,6 +55,7 @@ public class GraphNode extends AbstractLoadSupport {
             keyStrategyHashMap.put("isPass", KeyStrategy.REPLACE);
             keyStrategyHashMap.put("history", KeyStrategy.APPEND);
             keyStrategyHashMap.put("isCompleted", KeyStrategy.REPLACE);
+            keyStrategyHashMap.put("advisorList", KeyStrategy.REPLACE);
             return keyStrategyHashMap;
         };
 

@@ -26,4 +26,8 @@ public class Constants {
 
     public static final String CHAT_MEMORY_RETRIEVE_SIZE_KEY = "chat_memory_response_size";
 
+    public static final String TAG_LIST = "tag_list_";
+
+    public static final int TOPK = 5;
+
 }

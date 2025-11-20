@@ -1,14 +1,19 @@
 package ai.agent.station.domain.agent.service.execute.nodeaction;
 
 import ai.agent.station.domain.agent.model.entity.ExecuteResultEntity;
+import ai.agent.station.domain.agent.service.execute.manager.RagAnswerAdvisorManager;
 import ai.agent.station.domain.agent.service.execute.manager.ResponseBodyEmitterManager;
+import ai.agent.station.domain.agent.service.load.advisor.RagAnswerAdvisor;
 import com.alibaba.cloud.ai.graph.OverAllState;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +38,8 @@ public class TaskAnalysisNodeAction extends AbstractNodeAction {
         String userId = state.value("userId", "null");
         int maxStep = state.value("maxStep", DEFAULT_MAX_STEP);
         int currentStep = state.value("currentStep", DEFAULT_CURRENT_STEP);
+        String tag = state.value("tag", "");
         log.info("任务分析节点 - 任务：{}，用户：{}，最大执行步数：{}，当前执行步数：{}", prompt, userId, maxStep, currentStep);
-
         // 提示词
         List<String> historyList = state.value("history", List.of());
         String history = String.join("\n", historyList);
@@ -64,6 +69,7 @@ public class TaskAnalysisNodeAction extends AbstractNodeAction {
                 .advisors(a -> a
                         .param(CHAT_MEMORY_CONVERSATION_ID_KEY, userId)
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 1024))
+                .advisors(getRagAnswerAdvisorList(userId, tag))
                 .stream()
                 .content();
 

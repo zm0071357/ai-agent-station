@@ -4,6 +4,7 @@ package ai.agent.station.domain.agent.service.execute.factory;
 import ai.agent.station.domain.agent.model.entity.ChatRequestEntity;
 import ai.agent.station.domain.agent.model.entity.CheckRequestEntity;
 import ai.agent.station.domain.agent.service.execute.filter.PromptFilter;
+import ai.agent.station.domain.agent.service.execute.filter.RagFilter;
 import ai.agent.station.domain.agent.service.execute.filter.StepFilter;
 import ai.agent.station.domain.agent.service.execute.filter.UserFilter;
 import ai.agent.station.types.framework.link.multition.LinkArmory;
@@ -26,10 +27,10 @@ public class DefaultLinkFactory {
 
     @Bean("executeLogicLink")
     public BusinessLinkedList<ChatRequestEntity, DynamicContext, CheckRequestEntity> executeLogicLink(
-            UserFilter userFilter, PromptFilter promptFilter, StepFilter stepFilter) {
+            StepFilter stepFilter, UserFilter userFilter, PromptFilter promptFilter, RagFilter ragFilter) {
         // 组装链
         LinkArmory<ChatRequestEntity, DynamicContext, CheckRequestEntity> linkArmory =
-                new LinkArmory<>("调用模型校验责任链", userFilter, promptFilter, stepFilter);
+                new LinkArmory<>("调用模型校验责任链", stepFilter, userFilter, promptFilter, ragFilter);
         // 链对象
         return linkArmory.getLogicLink();
     }

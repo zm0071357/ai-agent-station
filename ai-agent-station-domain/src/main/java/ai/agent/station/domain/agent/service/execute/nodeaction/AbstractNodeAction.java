@@ -1,12 +1,18 @@
 package ai.agent.station.domain.agent.service.execute.nodeaction;
 
 import ai.agent.station.domain.agent.model.entity.ExecuteResultEntity;
+import ai.agent.station.domain.agent.service.execute.manager.RagAnswerAdvisorManager;
+import ai.agent.station.domain.agent.service.load.advisor.RagAnswerAdvisor;
 import com.alibaba.cloud.ai.graph.action.NodeAction;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 抽象NodeAction
@@ -50,4 +56,18 @@ public abstract class AbstractNodeAction implements NodeAction {
      */
     protected abstract void sendResult(ResponseBodyEmitter emitter, int currentStep, String subType, String content, String userId);
 
+    /**
+     * 通用获取RagAnswerAdvisor集合
+     * @param userId 用户ID
+     * @param tag 知识库标签
+     * @return
+     */
+    protected List<Advisor> getRagAnswerAdvisorList(String userId, String tag) {
+        List<Advisor> advisorList = new ArrayList<>();
+        if (StringUtils.isNotBlank(tag)) {
+            RagAnswerAdvisor ragAnswerAdvisor = RagAnswerAdvisorManager.getRagAnswerAdvisor(RagAnswerAdvisorManager.getId(userId, tag));
+            advisorList.add(ragAnswerAdvisor);
+        }
+        return advisorList;
+    }
 }

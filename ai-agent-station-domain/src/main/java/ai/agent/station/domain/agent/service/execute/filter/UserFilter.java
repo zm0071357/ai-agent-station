@@ -32,10 +32,10 @@ public class UserFilter implements LogicHandler<ChatRequestEntity, DefaultLinkFa
         }
         // 用户剩余可调用次数校验
         Integer executeCount = userRepository.checkUserExecuteCount(chatRequestEntity.getUserId());
-        if (executeCount <= 0) {
+        if (executeCount <= 0 || executeCount - chatRequestEntity.getMaxStep() < 0) {
             return CheckRequestEntity.builder()
                     .isPass(false)
-                    .message("用户可调用次数不足")
+                    .message("可剩余调用次数不足")
                     .build();
         }
         // 将剩余可调用次数写入动态上下文
