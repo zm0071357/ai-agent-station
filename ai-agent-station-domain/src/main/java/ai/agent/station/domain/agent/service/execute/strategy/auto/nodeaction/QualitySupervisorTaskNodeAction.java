@@ -1,4 +1,4 @@
-package ai.agent.station.domain.agent.service.execute.nodeaction;
+package ai.agent.station.domain.agent.service.execute.strategy.auto.nodeaction;
 
 import ai.agent.station.domain.agent.model.entity.ExecuteResultEntity;
 import ai.agent.station.domain.agent.model.entity.SupervisionResultEntity;
@@ -20,11 +20,11 @@ import static ai.agent.station.types.common.Constants.*;
  * 任务助手状态图 - 质量监督节点
  */
 @Slf4j
-public class QualitySupervisorNodeAction extends AbstractNodeAction {
+public class QualitySupervisorTaskNodeAction extends AbstractTaskNodeAction {
 
     private final ChatClient qualitySupervisorClient;
 
-    public QualitySupervisorNodeAction(ChatClient qualitySupervisorClient) {
+    public QualitySupervisorTaskNodeAction(ChatClient qualitySupervisorClient) {
         this.qualitySupervisorClient = qualitySupervisorClient;
     }
 

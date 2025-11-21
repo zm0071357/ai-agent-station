@@ -6,21 +6,17 @@ import ai.agent.station.api.response.Response;
 import ai.agent.station.domain.agent.model.entity.ChatRequestEntity;
 import ai.agent.station.domain.agent.service.execute.ExecuteService;
 import ai.agent.station.domain.agent.service.execute.manager.ResponseBodyEmitterManager;
-import ai.agent.station.domain.agent.service.load.advisor.RagAnswerAdvisor;
 import ai.agent.station.domain.agent.service.rag.RagService;
 import ai.agent.station.types.enums.ResponseCodeEnum;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.ai.chat.client.advisor.api.Advisor;
-import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -47,7 +43,7 @@ public class AgentController implements AgentService {
             ResponseBodyEmitter emitter = ResponseBodyEmitterManager.put(chatRequestDTO.getUserId(), Long.MAX_VALUE);
             // 参数校验
             if (StringUtils.isBlank(chatRequestDTO.getUserId()) || StringUtils.isBlank(chatRequestDTO.getPrompt()) ||
-                    chatRequestDTO.getMaxStep() == null) {
+                    StringUtils.isBlank(chatRequestDTO.getAgentId())) {
                 return ResponseBodyEmitterManager.send(chatRequestDTO.getUserId(), "参数非法");
             }
             // 异步执行Agent
@@ -57,6 +53,7 @@ public class AgentController implements AgentService {
                             ChatRequestEntity.builder()
                                     .userId(chatRequestDTO.getUserId())
                                     .prompt(chatRequestDTO.getPrompt())
+                                    .agentId(chatRequestDTO.getAgentId())
                                     .maxStep(chatRequestDTO.getMaxStep())
                                     .tag(chatRequestDTO.getTag())
                                     .build(),

@@ -2,7 +2,7 @@ package ai.agent.station.domain.agent.service.execute.filter;
 
 import ai.agent.station.domain.agent.model.entity.ChatRequestEntity;
 import ai.agent.station.domain.agent.model.entity.CheckRequestEntity;
-import ai.agent.station.domain.agent.service.execute.factory.DefaultLinkFactory;
+import ai.agent.station.domain.agent.service.execute.factory.DefaultExecuteLogicLinkFactory;
 import ai.agent.station.domain.agent.service.execute.manager.RagAnswerAdvisorManager;
 import ai.agent.station.domain.agent.service.load.advisor.RagAnswerAdvisor;
 import ai.agent.station.types.framework.link.multition.handler.LogicHandler;
@@ -22,7 +22,7 @@ import static ai.agent.station.types.common.Constants.TAG_LIST;
  */
 @Slf4j
 @Service
-public class RagFilter implements LogicHandler<ChatRequestEntity, DefaultLinkFactory.DynamicContext, CheckRequestEntity> {
+public class RagFilter implements LogicHandler<ChatRequestEntity, DefaultExecuteLogicLinkFactory.DynamicContext, CheckRequestEntity> {
 
     @Resource
     private RedissonClient redissonClient;
@@ -31,7 +31,7 @@ public class RagFilter implements LogicHandler<ChatRequestEntity, DefaultLinkFac
     private PgVectorStore pgVectorStore;
 
     @Override
-    public CheckRequestEntity apply(ChatRequestEntity chatRequestEntity, DefaultLinkFactory.DynamicContext dynamicContext) throws Exception {
+    public CheckRequestEntity apply(ChatRequestEntity chatRequestEntity, DefaultExecuteLogicLinkFactory.DynamicContext dynamicContext) throws Exception {
         log.info("调用模型校验责任链 - RAG校验节点，用户ID：{}", chatRequestEntity.getUserId());
         if (StringUtils.isNotBlank(chatRequestEntity.getTag())) {
             log.info("调用模型校验责任链 - RAG校验节点，用户ID：{}，标签：{}", chatRequestEntity.getUserId(), chatRequestEntity.getTag());

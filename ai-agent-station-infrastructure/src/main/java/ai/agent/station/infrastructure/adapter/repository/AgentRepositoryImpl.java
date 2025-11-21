@@ -26,6 +26,12 @@ import java.util.Map;
 public class AgentRepositoryImpl implements AgentRepository {
 
     @Resource
+    private AgentDao agentDao;
+
+    @Resource
+    private AgentConfigDao agentConfigDao;
+
+    @Resource
     private ClientConfigDao clientConfigDao;
 
     @Resource
@@ -45,6 +51,22 @@ public class AgentRepositoryImpl implements AgentRepository {
 
     @Resource
     private ClientDao clientDao;
+
+    @Override
+    public AgentVO getAgentByAgentId(String agentId) {
+        Agent agent = agentDao.getAgentByAgentId(agentId);
+        return AgentVO.builder()
+                .agentId(agentId)
+                .agentName(agent.getAgentName())
+                .agentType(agent.getAgentType())
+                .description(agent.getDescription())
+                .build();
+    }
+
+    @Override
+    public List<String> getClientIdListByAgentId(String agentId) {
+        return agentConfigDao.getClientIdListByAgentId(agentId);
+    }
 
     @Override
     public Map<String, ClientModelVO> getClientModelMap(List<String> clientIdList) {

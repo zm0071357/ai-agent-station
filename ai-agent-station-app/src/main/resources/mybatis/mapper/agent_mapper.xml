@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ai.agent.station.infrastructure.dao.AgentDao">
+
+    <resultMap id="AgentMap" type="ai.agent.station.infrastructure.dao.po.Agent">
+        <id column="id" property="id"/>
+        <result column="agent_id" property="agentId"/>
+        <result column="agent_name" property="agentName"/>
+        <result column="agent_type" property="agentType"/>
+        <result column="description" property="description"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="getAgentByAgentId" resultMap="AgentMap">
+        select agent_id, agent_name, agent_type, description
+        from agent
+        where agent_id = #{agentId} and status = 1
+    </select>
+
+</mapper>

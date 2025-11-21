@@ -42,58 +42,29 @@ public class AgentTest {
     }
 
     @Test
-    public void test_execute() throws Exception {
+    public void test_execute_auto() throws Exception {
         String userId = "399547479";
         ResponseBodyEmitter emitter = ResponseBodyEmitterManager.put(userId, Long.MAX_VALUE);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         executeService.execute(
                 ChatRequestEntity.builder()
                         .userId("399547479")
-                        .prompt("请基于知识库写一个故事")
-                        .tag("LZM相关信息")
+                        .prompt("")
+                        .agentId("1")
                         .maxStep(3)
+                        .build(),
+                emitter
+        );
+    }
+
+    @Test
+    public void test_execute_flow() throws Exception {
+        String userId = "399547479";
+        ResponseBodyEmitter emitter = ResponseBodyEmitterManager.put(userId, Long.MAX_VALUE);
+        executeService.execute(
+                ChatRequestEntity.builder()
+                        .userId("399547479")
+                        .prompt("在百度检索一下SpringAI的教学文档，写一篇博客发送到B站动态")
+                        .agentId("2")
                         .build(),
                 emitter
         );

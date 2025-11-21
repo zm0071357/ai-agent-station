@@ -8,6 +8,20 @@ import java.util.Map;
 public interface AgentRepository {
 
     /**
+     * 根据Agent ID获取Agent
+     * @param agentId Agent ID
+     * @return
+     */
+    AgentVO getAgentByAgentId(String agentId);
+
+    /**
+     * 根据Agent ID查询对应客户端ID集合
+     * @param agentId Agent ID
+     * @return
+     */
+    List<String> getClientIdListByAgentId(String agentId);
+
+    /**
      * 查询客户端模型配置Map
      * @param clientIdList 客户端ID集合
      * @return
@@ -48,4 +62,5 @@ public interface AgentRepository {
      * @return
      */
     List<ClientVO> getClientList(List<String> clientIdList);
+
 }

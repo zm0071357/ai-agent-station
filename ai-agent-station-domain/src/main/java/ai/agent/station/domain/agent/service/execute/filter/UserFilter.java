@@ -2,7 +2,8 @@ package ai.agent.station.domain.agent.service.execute.filter;
 
 import ai.agent.station.domain.agent.model.entity.ChatRequestEntity;
 import ai.agent.station.domain.agent.model.entity.CheckRequestEntity;
-import ai.agent.station.domain.agent.service.execute.factory.DefaultLinkFactory;
+import ai.agent.station.domain.agent.model.valobj.enums.AgentTypeEnum;
+import ai.agent.station.domain.agent.service.execute.factory.DefaultExecuteLogicLinkFactory;
 import ai.agent.station.domain.user.adapter.repository.UserRepository;
 import ai.agent.station.types.framework.link.multition.handler.LogicHandler;
 import jakarta.annotation.Resource;
@@ -14,13 +15,13 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-public class UserFilter implements LogicHandler<ChatRequestEntity, DefaultLinkFactory.DynamicContext, CheckRequestEntity> {
+public class UserFilter implements LogicHandler<ChatRequestEntity, DefaultExecuteLogicLinkFactory.DynamicContext, CheckRequestEntity> {
 
     @Resource
     private UserRepository userRepository;
 
     @Override
-    public CheckRequestEntity apply(ChatRequestEntity chatRequestEntity, DefaultLinkFactory.DynamicContext dynamicContext) throws Exception {
+    public CheckRequestEntity apply(ChatRequestEntity chatRequestEntity, DefaultExecuteLogicLinkFactory.DynamicContext dynamicContext) throws Exception {
         log.info("调用模型校验责任链 - 用户校验节点，用户ID：{}", chatRequestEntity.getUserId());
         // 用户黑名单校验
         Boolean isBlack = userRepository.checkUserBlack(chatRequestEntity.getUserId());
@@ -32,7 +33,13 @@ public class UserFilter implements LogicHandler<ChatRequestEntity, DefaultLinkFa
         }
         // 用户剩余可调用次数校验
         Integer executeCount = userRepository.checkUserExecuteCount(chatRequestEntity.getUserId());
-        if (executeCount <= 0 || executeCount - chatRequestEntity.getMaxStep() < 0) {
+        if (executeCount <= 0) {
+            return CheckRequestEntity.builder()
+                    .isPass(false)
+                    .message("可剩余调用次数不足")
+                    .build();
+        }
+        if (dynamicContext.getAgentTypeEnum().equals(AgentTypeEnum.AUTO) && executeCount - dynamicContext.getMaxStep() < 0) {
             return CheckRequestEntity.builder()
                     .isPass(false)
                     .message("可剩余调用次数不足")

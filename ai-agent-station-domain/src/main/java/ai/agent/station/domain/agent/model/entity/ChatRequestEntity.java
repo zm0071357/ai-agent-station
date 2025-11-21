@@ -20,6 +20,11 @@ public class ChatRequestEntity {
     private String userId;
 
     /**
+     * Agent ID
+     */
+    private String agentId;
+
+    /**
      * 提示词文本
      */
     private String prompt;

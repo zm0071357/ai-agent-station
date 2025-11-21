@@ -1,7 +1,9 @@
 package ai.agent.station.config;
 
+import ai.agent.station.domain.agent.adapter.repository.AgentRepository;
 import ai.agent.station.domain.agent.model.entity.LoadCommandEntity;
 import ai.agent.station.domain.agent.model.entity.LoadResEntity;
+import ai.agent.station.domain.agent.model.valobj.AgentVO;
 import ai.agent.station.domain.agent.service.load.factory.DefaultLoadFactory;
 import ai.agent.station.types.common.Constants;
 import ai.agent.station.types.framework.tree.StrategyHandler;
@@ -29,22 +31,34 @@ public class AgentAutoConfig implements ApplicationListener<ApplicationReadyEven
     @Resource
     private DefaultLoadFactory defaultLoadFactory;
 
+    @Resource
+    private AgentRepository agentRepository;
+
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         try {
             log.info("Agent自动装配开始");
-            String clientIdExpr = agentAutoConfigProperties.getClientIdListExpr();
-            if (StringUtils.isEmpty(clientIdExpr)) {
-                log.warn("客户端ID列表为空");
+            String agentIdListExpr = agentAutoConfigProperties.getAgentIdListExpr();
+            if (StringUtils.isEmpty(agentIdListExpr)) {
+                log.warn("Agent ID列表为空");
                 return;
             }
-            List<String> clientIdList = List.of(clientIdExpr.split(Constants.SPLIT));
-            StrategyHandler<LoadCommandEntity, DefaultLoadFactory.DynamicContext, LoadResEntity> loadHandler = defaultLoadFactory.loadHandler();
-            LoadResEntity loadResEntity = loadHandler.apply(LoadCommandEntity.builder()
-                            .clientIdList(clientIdList)
-                            .build(),
-                    new DefaultLoadFactory.DynamicContext());
-            log.info("Agent自动装配结果：{}", loadResEntity.getMessage());
+            List<String> agentIdList = List.of(agentIdListExpr.split(Constants.SPLIT));
+
+            for (String agentId : agentIdList) {
+                log.info("装配Agent - Agent ID：{}", agentId);
+                List<String> clientIdList = agentRepository.getClientIdListByAgentId(agentId);
+                AgentVO agentVO = agentRepository.getAgentByAgentId(agentId);
+                StrategyHandler<LoadCommandEntity, DefaultLoadFactory.DynamicContext, LoadResEntity> loadHandler = defaultLoadFactory.loadHandler();
+                DefaultLoadFactory.DynamicContext dynamicContext = new DefaultLoadFactory.DynamicContext();
+                dynamicContext.setAgentType(agentVO.getAgentType());
+                LoadResEntity loadResEntity = loadHandler.apply(
+                        LoadCommandEntity.builder()
+                                .clientIdList(clientIdList)
+                                .build(),
+                        dynamicContext);
+                log.info("装配Agent - Agent ID：{}，结果：{}", agentId, loadResEntity.getMessage());
+            }
         } catch (Exception e) {
             log.error("Agent自动装配失败", e);
         }

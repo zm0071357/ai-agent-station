@@ -1,4 +1,4 @@
-package ai.agent.station.domain.agent.service.execute.nodeaction;
+package ai.agent.station.domain.agent.service.execute.strategy.auto.nodeaction;
 
 import ai.agent.station.domain.agent.model.entity.ExecuteResultEntity;
 import ai.agent.station.domain.agent.service.execute.manager.RagAnswerAdvisorManager;
@@ -18,7 +18,7 @@ import java.util.List;
  * 抽象NodeAction
  */
 @Slf4j
-public abstract class AbstractNodeAction implements NodeAction {
+public abstract class AbstractTaskNodeAction implements NodeAction {
 
     /**
      * 通用发送SSE结果

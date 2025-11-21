@@ -41,6 +41,11 @@ public class DefaultLoadFactory {
     public static class DynamicContext {
 
         /**
+         * Agent类型
+         */
+        private String agentType;
+
+        /**
          * 数据聚合Map
          */
         private Map<String, Object> dataMap = new HashMap<>();

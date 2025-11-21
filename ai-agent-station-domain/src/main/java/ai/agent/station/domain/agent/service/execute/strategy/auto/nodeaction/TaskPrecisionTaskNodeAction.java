@@ -1,22 +1,14 @@
-package ai.agent.station.domain.agent.service.execute.nodeaction;
+package ai.agent.station.domain.agent.service.execute.strategy.auto.nodeaction;
 
 import ai.agent.station.domain.agent.model.entity.ExecuteResultEntity;
-import ai.agent.station.domain.agent.service.execute.factory.DefaultLinkFactory;
-import ai.agent.station.domain.agent.service.execute.manager.RagAnswerAdvisorManager;
 import ai.agent.station.domain.agent.service.execute.manager.ResponseBodyEmitterManager;
-import ai.agent.station.domain.agent.service.load.advisor.RagAnswerAdvisor;
 import com.alibaba.cloud.ai.graph.OverAllState;
-import com.alibaba.cloud.ai.graph.action.NodeAction;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static ai.agent.station.types.common.Constants.*;
@@ -25,11 +17,11 @@ import static ai.agent.station.types.common.Constants.*;
  * 任务助手状态图 - 任务执行节点
  */
 @Slf4j
-public class TaskPrecisionNodeAction extends AbstractNodeAction {
+public class TaskPrecisionTaskNodeAction extends AbstractTaskNodeAction {
 
     private final ChatClient taskPrecisionClient;
 
-    public TaskPrecisionNodeAction(ChatClient taskPrecisionClient) {
+    public TaskPrecisionTaskNodeAction(ChatClient taskPrecisionClient) {
         this.taskPrecisionClient = taskPrecisionClient;
     }
 

@@ -1,10 +1,8 @@
-package ai.agent.station.domain.agent.service.execute.nodeaction;
+package ai.agent.station.domain.agent.service.execute.strategy.auto.nodeaction;
 
 import ai.agent.station.domain.agent.model.entity.ExecuteResultEntity;
-import ai.agent.station.domain.agent.service.execute.factory.DefaultLinkFactory;
 import ai.agent.station.domain.agent.service.execute.manager.ResponseBodyEmitterManager;
 import com.alibaba.cloud.ai.graph.OverAllState;
-import com.alibaba.cloud.ai.graph.action.NodeAction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
@@ -19,11 +17,11 @@ import static ai.agent.station.types.common.Constants.*;
  * 任务助手状态图 - 结果总结节点
  */
 @Slf4j
-public class ResultSummaryNodeAction extends AbstractNodeAction {
+public class ResultSummaryTaskNodeAction extends AbstractTaskNodeAction {
 
     private final ChatClient resultSummaryClient;
 
-    public ResultSummaryNodeAction(ChatClient resultSummaryClient) {
+    public ResultSummaryTaskNodeAction(ChatClient resultSummaryClient) {
         this.resultSummaryClient = resultSummaryClient;
     }
 

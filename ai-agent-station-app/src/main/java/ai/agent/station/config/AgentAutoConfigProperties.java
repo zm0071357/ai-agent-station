@@ -13,8 +13,8 @@ public class AgentAutoConfigProperties {
     private boolean enabled = false;
 
     /**
-     * 客户端ID列表表达式
+     * Agent ID列表表达式
      */
-    private String clientIdListExpr;
+    private String agentIdListExpr;
 
 }
