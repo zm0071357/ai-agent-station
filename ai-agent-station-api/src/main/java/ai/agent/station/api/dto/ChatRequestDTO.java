@@ -9,9 +9,9 @@ import lombok.Getter;
 public class ChatRequestDTO {
 
     /**
-     * 用户ID
+     * 会话ID
      */
-    private String userId;
+    private String sessionId;
 
     /**
      * Agent ID

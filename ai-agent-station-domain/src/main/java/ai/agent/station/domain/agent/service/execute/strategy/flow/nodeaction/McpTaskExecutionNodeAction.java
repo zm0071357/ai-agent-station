@@ -32,10 +32,11 @@ public class McpTaskExecutionNodeAction extends AbstractFlowNodeAction {
     public Map<String, Object> apply(OverAllState state) throws Exception {
         try {
             log.info("MCP工具任务助手状态图 - MCP任务执行节点");
-            String prompt = state.value("prompt", "null");
-            String userId = state.value("userId", "null");
+            String prompt = state.value("prompt", "");
+            String userId = state.value("userId", "");
             Map<String, String> stepsMap = state.value("stepsMap", new HashMap<>());
             int currentStep = state.value("currentStep", 3);
+            String key = state.value("key", "");
             log.info("MCP任务执行节点 - 任务：{}，用户：{}，当前执行步数：{}", prompt, userId, currentStep);
 
             // 按顺序执行规划步骤
@@ -47,7 +48,7 @@ public class McpTaskExecutionNodeAction extends AbstractFlowNodeAction {
 
             // 发送结果
             log.info("MCP任务规划节点 - 用户：{}，发送第 {} 步结果", userId, currentStep);
-            sendResult(currentStep, "已完成所有规划步骤的执行", userId, ResponseBodyEmitterManager.get(userId));
+            sendResult(currentStep, "已完成所有规划步骤的执行", userId, ResponseBodyEmitterManager.get(key));
 
             return resultMap;
         } catch (Exception e) {

@@ -29,11 +29,12 @@ public class TaskAnalysisTaskNodeAction extends AbstractTaskNodeAction {
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         log.info("任务助手状态图 - 任务分析节点");
-        String prompt = state.value("prompt", "null");
-        String userId = state.value("userId", "null");
+        String prompt = state.value("prompt", "");
+        String userId = state.value("userId", "");
         int maxStep = state.value("maxStep", DEFAULT_MAX_STEP);
         int currentStep = state.value("currentStep", DEFAULT_CURRENT_STEP);
         String tag = state.value("tag", "");
+        String key = state.value("key", "");
         log.info("任务分析节点 - 任务：{}，用户：{}，最大执行步数：{}，当前执行步数：{}", prompt, userId, maxStep, currentStep);
         // 提示词
         List<String> historyList = state.value("history", List.of());
@@ -62,7 +63,7 @@ public class TaskAnalysisTaskNodeAction extends AbstractTaskNodeAction {
         // 大模型调用
         Flux<String> analysisFluxResult = taskAnalysisClient.prompt(analysisPrompt)
                 .advisors(a -> a
-                        .param(CHAT_MEMORY_CONVERSATION_ID_KEY, userId)
+                        .param(CHAT_MEMORY_CONVERSATION_ID_KEY, key)
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 1024))
                 .advisors(getRagAnswerAdvisorList(userId, tag))
                 .stream()
@@ -95,7 +96,7 @@ public class TaskAnalysisTaskNodeAction extends AbstractTaskNodeAction {
 
         // 解析和发送结果
         log.info("任务分析节点 - 用户：{}，解析第 {} 步结果", userId, currentStep);
-        parseResult(ResponseBodyEmitterManager.get(userId), currentStep, analysisResult, userId);
+        parseResult(ResponseBodyEmitterManager.get(key), currentStep, analysisResult, userId);
 
         // 写入上下文
         return Map.of(

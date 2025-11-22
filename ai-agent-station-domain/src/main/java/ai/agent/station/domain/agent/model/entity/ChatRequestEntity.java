@@ -15,6 +15,12 @@ import lombok.NoArgsConstructor;
 public class ChatRequestEntity {
 
     /**
+     * 会话标识 - 用于获取对应ResponseBodyEmitter
+     */
+    private String key;
+
+
+    /**
      * 用户ID
      */
     private String userId;

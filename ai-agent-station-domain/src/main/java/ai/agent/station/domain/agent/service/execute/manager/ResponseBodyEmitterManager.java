@@ -19,53 +19,53 @@ public class ResponseBodyEmitterManager {
 
     /**
      * 创建ResponseBodyEmitter
-     * @param userId 用户ID
+     * @param key 会话标识
      * @param timeOut 超时时间
      */
-    public static ResponseBodyEmitter put(String userId, long timeOut) {
+    public static ResponseBodyEmitter put(String key, long timeOut) {
         ResponseBodyEmitter emitter = new ResponseBodyEmitter(timeOut);
-        emitterMap.put(userId, emitter);
-        log.info("存储ResponseBodyEmitter，用户ID：{}", userId);
+        emitterMap.put(key, emitter);
+        log.info("存储ResponseBodyEmitter，会话标识：{}", key);
         return emitter;
     }
 
     /**
      * 获取ResponseBodyEmitter
-     * @param userId 用户ID
+     * @param key 会话标识
      * @return ResponseBodyEmitter
      */
-    public static ResponseBodyEmitter get(String userId) {
-        return emitterMap.get(userId);
+    public static ResponseBodyEmitter get(String key) {
+        return emitterMap.get(key);
     }
 
     /**
      * 移除ResponseBodyEmitter
-     * @param userId 用户ID
+     * @param key 会话标识
      */
-    public static void remove(String userId) {
-        ResponseBodyEmitter emitter = emitterMap.remove(userId);
+    public static void remove(String key) {
+        ResponseBodyEmitter emitter = emitterMap.remove(key);
         if (emitter != null) {
             try {
                 emitter.complete();
-                log.info("移除ResponseBodyEmitter，用户ID: {}", userId);
+                log.info("移除ResponseBodyEmitter，会话标识: {}", key);
             } catch (Exception e) {
-                log.error("移除ResponseBodyEmitter时出错，用户ID: {}", userId, e);
+                log.error("移除ResponseBodyEmitter时出错，会话标识: {}", key, e);
             }
         }
     }
 
     /**
      * 发送消息
-     * @param userId 用户ID
+     * @param key 会话标识
      * @param message 信息
      */
-    public static ResponseBodyEmitter send(String userId, String message) {
-        ResponseBodyEmitter emitter = get(userId);
+    public static ResponseBodyEmitter send(String key, String message) {
+        ResponseBodyEmitter emitter = get(key);
         if (emitter != null) {
             try {
                 emitter.send(message);
             } catch (IOException e) {
-                log.error("发送信息时出错，用户ID: {}", userId, e);
+                log.error("发送信息时出错，会话标识: {}", key, e);
             }
         }
         return emitter;

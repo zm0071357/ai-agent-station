@@ -28,14 +28,15 @@ public class ResultSummaryTaskNodeAction extends AbstractTaskNodeAction {
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         log.info("任务助手状态图 - 结果总结节点");
-        String prompt = state.value("prompt", "null");
-        String userId = state.value("userId", "null");
+        String prompt = state.value("prompt", "");
+        String userId = state.value("userId", "");
         int maxStep = state.value("maxStep", DEFAULT_MAX_STEP);
         int currentStep = state.value("currentStep", DEFAULT_CURRENT_STEP);
         String isCompleted = state.value("isCompleted", "YES");
-        String analysisResult = state.value("analysisResult", "null");
-        String precisionResult = state.value("precisionResult", "null");
-        String supervisionResult = state.value("supervisionResult", "null");
+        String analysisResult = state.value("analysisResult", "");
+        String precisionResult = state.value("precisionResult", "");
+        String supervisionResult = state.value("supervisionResult", "");
+        String key = state.value("key", "");
         log.info("结果总结节点 - 任务：{}，用户：{}，最大执行步数：{}，当前执行步数：{}，是否执行完成：{}", prompt, userId, maxStep, currentStep, isCompleted);
 
         String summaryPrompt = getSummaryPrompt(isCompleted, prompt, analysisResult, precisionResult, supervisionResult);
@@ -43,7 +44,7 @@ public class ResultSummaryTaskNodeAction extends AbstractTaskNodeAction {
         // 大模型调用
         Flux<String> summaryFluxResult = resultSummaryClient.prompt(summaryPrompt)
                 .advisors(a -> a
-                        .param(CHAT_MEMORY_CONVERSATION_ID_KEY, userId)
+                        .param(CHAT_MEMORY_CONVERSATION_ID_KEY, key)
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 1024))
                 .stream()
                 .content();
@@ -57,7 +58,7 @@ public class ResultSummaryTaskNodeAction extends AbstractTaskNodeAction {
         log.info("结果总结节点 - 任务：{}，用户：{}，结果总结：\n{}", prompt, userId, summaryResult);
 
         //解析和发送结果
-        parseResult(ResponseBodyEmitterManager.get(userId), currentStep, summaryResult, userId);
+        parseResult(ResponseBodyEmitterManager.get(key), currentStep, summaryResult, userId);
 
         return Map.of(
                 "prompt", prompt,

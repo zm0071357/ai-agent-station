@@ -20,27 +20,24 @@ public interface AgentService {
 
     /**
      * 上传知识库
-     * @param userId 用户ID
      * @param tag 知识库标签
      * @param fileList 文件集合
      * @return
      */
-    Response<String> uploadKnowledge(String userId, String tag, List<MultipartFile> fileList);
+    Response<String> uploadKnowledge(String tag, List<MultipartFile> fileList);
 
     /**
      * 拉取Git代码库并上传知识库
-     * @param userId 用户ID
      * @param tag 知识库标签
      * @param repoUrl Git代码库URL
      * @return
      */
-    Response<String> repoGit(String userId, String tag, String repoUrl);
+    Response<String> repoGit(String tag, String repoUrl);
 
     /**
      * 获取知识库标签集合
-     * @param userId 用户ID
      * @return
      */
-    Response<List<String>> getTagList(String userId);
+    Response<List<String>> getTagList();
 
 }

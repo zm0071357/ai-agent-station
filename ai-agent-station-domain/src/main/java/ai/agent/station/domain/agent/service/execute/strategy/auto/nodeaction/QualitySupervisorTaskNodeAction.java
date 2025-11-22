@@ -31,11 +31,12 @@ public class QualitySupervisorTaskNodeAction extends AbstractTaskNodeAction {
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         log.info("任务助手状态图 - 质量监督节点");
-        String prompt = state.value("prompt", "null");
-        String userId = state.value("userId", "null");
+        String prompt = state.value("prompt", "");
+        String userId = state.value("userId", "");
         int maxStep = state.value("maxStep", DEFAULT_MAX_STEP);
         int currentStep = state.value("currentStep", DEFAULT_CURRENT_STEP);
         String tag = state.value("tag", "");
+        String key = state.value("key", "");
         log.info("质量监督节点 - 任务：{}，用户：{}，最大执行步数：{}，当前执行步数：{}", prompt, userId, maxStep, currentStep);
 
         // 提示词
@@ -67,7 +68,7 @@ public class QualitySupervisorTaskNodeAction extends AbstractTaskNodeAction {
         // 大模型调用
         Flux<String> supervisionFluxResult = qualitySupervisorClient.prompt(supervisionPrompt)
                 .advisors(a -> a
-                        .param(CHAT_MEMORY_CONVERSATION_ID_KEY, userId)
+                        .param(CHAT_MEMORY_CONVERSATION_ID_KEY, key)
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 1024))
                 .advisors(getRagAnswerAdvisorList(userId, tag))
                 .stream()
@@ -86,7 +87,7 @@ public class QualitySupervisorTaskNodeAction extends AbstractTaskNodeAction {
 
         // 解析和发送结果
         log.info("质量监督节点 - 用户：{}，解析第 {} 步结果", userId, currentStep);
-        parseResult(ResponseBodyEmitterManager.get(userId), currentStep, supervisionResult, userId);
+        parseResult(ResponseBodyEmitterManager.get(key), currentStep, supervisionResult, userId);
 
         // 获取枚举
         SupervisionResultEnum supervisionResultEnum = SupervisionResultEnum.get(currentStep >= maxStep, SupervisionEnum.getSupervision(supervisionResult));

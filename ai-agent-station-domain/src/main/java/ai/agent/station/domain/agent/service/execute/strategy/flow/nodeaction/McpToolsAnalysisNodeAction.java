@@ -26,9 +26,10 @@ public class McpToolsAnalysisNodeAction extends AbstractFlowNodeAction {
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         log.info("MCP工具任务助手状态图 - MCP工具分析节点");
-        String prompt = state.value("prompt", "null");
-        String userId = state.value("userId", "null");
+        String prompt = state.value("prompt", "");
+        String userId = state.value("userId", "");
         int currentStep = state.value("currentStep", 0);
+        String key = state.value("key", "");
         log.info("MCP工具分析节点 - 任务：{}，用户：{}，当前执行步数：{}", prompt, userId, currentStep);
         // 提示词
         String mcpToolsAnalysisPrompt = String.format("""
@@ -93,7 +94,7 @@ public class McpToolsAnalysisNodeAction extends AbstractFlowNodeAction {
 
         // 发送结果
         log.info("MCP工具分析节点 - 用户：{}，发送第 {} 步结果", userId, currentStep);
-        sendResult(currentStep, mcpToolsAnalysisResult, userId, ResponseBodyEmitterManager.get(userId));
+        sendResult(currentStep, mcpToolsAnalysisResult, userId, ResponseBodyEmitterManager.get(key));
 
         // 写入上下文
         return Map.of(

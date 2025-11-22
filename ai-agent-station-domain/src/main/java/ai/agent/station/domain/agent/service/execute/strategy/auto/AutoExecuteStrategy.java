@@ -39,6 +39,7 @@ public class AutoExecuteStrategy extends AbstractExecuteStrategy {
     @Override
     protected Map<String, Object> invoke(ChatRequestEntity chatRequestEntity) {
         HashMap<String, Object> requestParamMap = new HashMap<>();
+        requestParamMap.put("key", chatRequestEntity.getKey());
         requestParamMap.put("prompt", chatRequestEntity.getPrompt());
         requestParamMap.put("userId", chatRequestEntity.getUserId());
         requestParamMap.put("maxStep", chatRequestEntity.getMaxStep());

@@ -16,18 +16,11 @@ public interface UserDao {
     User getUserByUserId(@Param("userId") String userId);
 
     /**
-     * 通过邮箱获取用户
-     * @param userEmail
-     * @return
-     */
-    User getUserByUserEmail(@Param("userEmail") String userEmail);
-
-    /**
      * 新增用户
      * @param user
      * @return
      */
-    int insert(User user);
+    void insert(User user);
 
     /**
      * 更新用户积分点数
@@ -42,4 +35,11 @@ public interface UserDao {
      * @return
      */
     Integer updateUserExecuteCount(User user);
+
+    /**
+     * 获取用户
+     * @param userReq
+     * @return
+     */
+    User getUser(User userReq);
 }

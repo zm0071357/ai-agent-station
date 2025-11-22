@@ -22,10 +22,11 @@ public class McpTaskParseStepsNodeAction extends AbstractFlowNodeAction {
     @Override
     public Map<String, Object> apply(OverAllState state) throws Exception {
         log.info("MCP工具任务助手状态图 - 规划步骤解析节点");
-        String prompt = state.value("prompt", "null");
-        String userId = state.value("userId", "null");
+        String prompt = state.value("prompt", "");
+        String userId = state.value("userId", "");
         String mcpToolsTaskPlanningResult = state.value("mcpToolsTaskPlanningResult", "");
         int currentStep = state.value("currentStep", 2);
+        String key = state.value("key", "");
         log.info("规划步骤解析节点 - 任务：{}，用户：{}，当前执行步数：{}", prompt, userId, currentStep);
         if (StringUtils.isBlank(mcpToolsTaskPlanningResult)) {
             log.warn("MCP工具任务助手状态图 - 规划步骤解析节点，规划结果为空，无法解析步骤，任务：{}，用户ID：{}", prompt, userId);
@@ -49,7 +50,7 @@ public class McpTaskParseStepsNodeAction extends AbstractFlowNodeAction {
 
         // 发送结果
         log.info("规划步骤解析节点 - 用户：{}，发送第 {} 步结果", userId, currentStep);
-        sendResult(currentStep, parseResult.toString(), userId, ResponseBodyEmitterManager.get(userId));
+        sendResult(currentStep, parseResult.toString(), userId, ResponseBodyEmitterManager.get(key));
 
         // 写入上下文
         return Map.of(

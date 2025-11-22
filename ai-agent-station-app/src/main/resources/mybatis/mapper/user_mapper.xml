@@ -20,17 +20,13 @@
         WHERE user_id = #{userId}
     </select>
 
-    <select id="getUserByUserEmail" resultMap="UserMap">
-        SELECT id, user_id, user_name, user_email, is_black, execute_count, password, create_time, update_time
-        FROM user
-        WHERE user_email = #{userEmail}
-    </select>
-
     <insert id="insert" parameterType="ai.agent.station.infrastructure.dao.po.User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO user (
             user_id,
             user_name,
             user_email,
+            is_black,
+            execute_count,
             password,
             create_time,
             update_time
@@ -38,6 +34,8 @@
                      #{userId},
                      #{userName},
                      #{userEmail},
+                     0,
+                     20,
                      #{password},
                      now(),
                      now()
@@ -55,5 +53,12 @@
         SET execute_count = execute_count + #{executeCount}, update_time = now()
         WHERE user_id = #{userId}
     </update>
+
+    <select id="getUser" resultMap="UserMap">
+        SELECT id, user_id, user_name, user_email, is_black, execute_count, password, create_time, update_time
+        FROM user
+        WHERE user_id = #{userId} and user_email = #{userEmail}
+    </select>
+
 
 </mapper>

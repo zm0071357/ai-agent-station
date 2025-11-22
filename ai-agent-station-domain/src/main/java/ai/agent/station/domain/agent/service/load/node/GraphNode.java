@@ -78,6 +78,7 @@ public class GraphNode extends AbstractLoadSupport {
             keyStrategyHashMap.put("history", KeyStrategy.APPEND);
             keyStrategyHashMap.put("isCompleted", KeyStrategy.REPLACE);
             keyStrategyHashMap.put("advisorList", KeyStrategy.REPLACE);
+            keyStrategyHashMap.put("key", KeyStrategy.REPLACE);
             return keyStrategyHashMap;
         };
 
@@ -148,6 +149,7 @@ public class GraphNode extends AbstractLoadSupport {
             keyStrategyHashMap.put("mcpToolsTaskPlanningResult", KeyStrategy.REPLACE);
             keyStrategyHashMap.put("stepsMap", KeyStrategy.REPLACE);
             keyStrategyHashMap.put("executeCount", KeyStrategy.REPLACE);
+            keyStrategyHashMap.put("key", KeyStrategy.REPLACE);
             return keyStrategyHashMap;
         };
 
